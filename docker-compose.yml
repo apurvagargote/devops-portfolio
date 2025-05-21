@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  portfolio-website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - ./website-index.html:/usr/share/nginx/html/index.html
+      - ./website-styles.css:/usr/share/nginx/html/styles.css
+      - ./website-main.js:/usr/share/nginx/html/main.js

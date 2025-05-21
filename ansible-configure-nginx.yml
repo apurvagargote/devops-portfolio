@@ -1,0 +1,35 @@
+---
+- name: Configure Nginx for Portfolio Website
+  hosts: eks_nodes
+  become: yes
+  
+  tasks:
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+      
+    - name: Create Nginx configuration directory
+      file:
+        path: /etc/nginx/conf.d
+        state: directory
+        mode: '0755'
+      
+    - name: Configure Nginx for Portfolio Website
+      template:
+        src: templates/nginx-portfolio.conf.j2
+        dest: /etc/nginx/conf.d/portfolio.conf
+        mode: '0644'
+      notify: Restart Nginx
+      
+    - name: Ensure Nginx is running and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+        
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
