@@ -1,3 +1,79 @@
+// Theme toggle functionality
+function setupThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Check for saved theme preference or use the system preference
+    const currentTheme = localStorage.getItem('theme') || 
+                        (prefersDarkScheme.matches ? 'dark' : 'light');
+    
+    // Set initial theme
+    if (currentTheme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        document.body.removeAttribute('data-theme');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+    
+    // Toggle theme when button is clicked
+    themeToggle.addEventListener('click', () => {
+        let theme = 'light';
+        
+        if (!document.body.hasAttribute('data-theme')) {
+            document.body.setAttribute('data-theme', 'dark');
+            theme = 'dark';
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            document.body.removeAttribute('data-theme');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+        
+        // Save preference to localStorage
+        localStorage.setItem('theme', theme);
+    });
+}
+
+// Particle background effect
+function setupParticles() {
+    const particlesContainer = document.getElementById('particles-js');
+    if (!particlesContainer) return;
+    
+    // Create animated background elements
+    for (let i = 0; i < 10; i++) {
+        const span = document.createElement('span');
+        span.style.width = `${Math.random() * 30 + 10}px`;
+        span.style.height = span.style.width;
+        span.style.left = `${Math.random() * 100}%`;
+        span.style.animationDelay = `${Math.random() * 5}s`;
+        span.style.animationDuration = `${Math.random() * 10 + 15}s`;
+        span.style.opacity = Math.random() * 0.1;
+        particlesContainer.appendChild(span);
+    }
+}
+
+// Typing effect for hero section
+function setupTypingEffect() {
+    const element = document.querySelector('.typing-text');
+    if (!element) return;
+    
+    const text = element.getAttribute('data-text');
+    const delay = 100; // ms per character
+    let i = 0;
+    
+    element.textContent = '';
+    
+    function typeChar() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeChar, delay);
+        }
+    }
+    
+    typeChar();
+}
+
 // Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
@@ -19,11 +95,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 const header = document.querySelector('header');
 window.addEventListener('scroll', () => {
     if (window.scrollY > 100) {
-        header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        header.classList.add('scrolled');
     } else {
-        header.style.backgroundColor = 'white';
-        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        header.classList.remove('scrolled');
     }
 });
 
@@ -51,53 +125,34 @@ if (contactForm) {
     });
 }
 
-// Animation for skill cards on scroll
-const skillCards = document.querySelectorAll('.skill-card');
-const projectCards = document.querySelectorAll('.project-card');
-const certCards = document.querySelectorAll('.cert-card');
-
-// Simple animation function for elements
-function animateOnScroll(elements) {
+// Animation for elements on scroll
+function animateOnScroll() {
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    
     elements.forEach(element => {
         const elementPosition = element.getBoundingClientRect().top;
         const screenPosition = window.innerHeight / 1.3;
         
         if (elementPosition < screenPosition) {
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
+            element.classList.add('animated');
         }
     });
 }
 
-// Set initial styles
-skillCards.forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'all 0.5s ease';
-});
-
-projectCards.forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'all 0.5s ease';
-});
-
-certCards.forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'all 0.5s ease';
-});
-
-// Add scroll event listener
-window.addEventListener('scroll', () => {
-    animateOnScroll(skillCards);
-    animateOnScroll(projectCards);
-    animateOnScroll(certCards);
-});
-
-// Trigger once on load
-window.addEventListener('load', () => {
-    animateOnScroll(skillCards);
-    animateOnScroll(projectCards);
-    animateOnScroll(certCards);
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    setupThemeToggle();
+    setupParticles();
+    setupTypingEffect();
+    
+    // Add animate-on-scroll class to elements
+    document.querySelectorAll('.skill-card, .project-card, .cert-card').forEach(el => {
+        el.classList.add('animate-on-scroll');
+    });
+    
+    // Initial animation check
+    animateOnScroll();
+    
+    // Listen for scroll events
+    window.addEventListener('scroll', animateOnScroll);
 });
